@@ -185,12 +185,34 @@ def heuristica1(tabuleiro):
                 conta_fora_ordem += 1
     return conta_fora_ordem
 
+
+#2
+def prox(i, j): #funcao q retorna a posicao do prox elemento do tabuleiro
+    if j == 3:
+        j = 0
+        return (i+1, j)
+    else:
+        return (i, j+1)
+
+def heuristica2(tabuleiro):
+    conta_fora_ordem = 0
+    for i in range(0,4):
+        for j in range(0,4):
+            if tabuleiro[i][j] == 0: # nao analisa caso vazio
+                continue
+            if not (i == 3 and j == 3): # nao analise se chegar no final do tabuleiro
+                x, y = prox(i, j) # calcula as posicoes do proximo elemento
+                if tabuleiro[i][j] == tabuleiro[x][y] - 1: # ve se eh igual
+                    continue
+                else:
+                    conta_fora_ordem += 1 # se nao for, soma
+    return conta_fora_ordem
 ##Main
 
 def main():
     tabuleiro = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]] #inicializa matriz tabuleiro
     leEntrada(tabuleiro)
-    res = a_estrela(tabuleiro)
+    res = heuristica2(tabuleiro)
     print(res)
 
 main()
