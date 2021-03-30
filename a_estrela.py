@@ -207,12 +207,54 @@ def heuristica2(tabuleiro):
                 else:
                     conta_fora_ordem += 1 # se nao for, soma
     return conta_fora_ordem
+
+#3
+dict_posicoes = {'1': [0,0], 
+                 '2': [1,0], 
+                 '3': [2,0], 
+                 '4': [3,0], 
+                 '5': [0,1], 
+                 '6': [1,1], 
+                 '7': [2,1], 
+                 '8': [3,1],
+                 '9': [0,2],
+                 '10':[1,2],
+                 '11':[2,2],
+                 '12':[2,3],
+                 '13':[0,3],
+                 '14':[1,3],
+                 '15':[2,3],
+                 '0': [3,3]}
+
+def distancia_manhattan(i_atual, j_atual, i_final, j_final):
+    print('i_atual ' + str(i_atual) + ' j_atual ' + str(j_atual))
+    print('i_final ' + str(i_final) + ' j_final ' + str(j_final))
+    soma = 0
+    soma = abs(i_atual - i_final)
+    soma = soma + abs(j_atual - j_final)
+    return soma
+
+def heuristica3(tabuleiro):
+    soma = 0
+    for i in range(0, 4):
+        for j in range(0,4):
+            chave = str(tabuleiro[i][j]) #define a chave como o valor da posicao (i,j)
+            x, y = dict_posicoes.get(chave) #pesquisa pela posicao correta desse valor
+            if (x == i) and (y == j): #caso valor ja esteja na pos correta
+                continue
+            else: #somar distancia manhattan
+                soma = soma + distancia_manhattan(i, j, x, y)
+                print('soma ' + str(soma))
+    return soma
+
+
+
 ##Main
 
 def main():
     tabuleiro = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]] #inicializa matriz tabuleiro
     leEntrada(tabuleiro)
-    res = heuristica2(tabuleiro)
+    res = heuristica3(tabuleiro)
     print(res)
 
 main()
