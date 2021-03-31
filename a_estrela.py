@@ -227,8 +227,6 @@ dict_posicoes = {'1': [0,0],
                  '0': [3,3]}
 
 def distancia_manhattan(i_atual, j_atual, i_final, j_final):
-    print('i_atual ' + str(i_atual) + ' j_atual ' + str(j_atual))
-    print('i_final ' + str(i_final) + ' j_final ' + str(j_final))
     soma = 0
     soma = abs(i_atual - i_final)
     soma = soma + abs(j_atual - j_final)
@@ -244,17 +242,29 @@ def heuristica3(tabuleiro):
                 continue
             else: #somar distancia manhattan
                 soma = soma + distancia_manhattan(i, j, x, y)
-                print('soma ' + str(soma))
     return soma
 
+#4
 
+def heuristica4(tabuleiro):
+    res = 0
+    p1, p2, p3 = [0.3, 0.35, 0.35]
+    res = p1 * heuristica1(tabuleiro) + p2 * heuristica2(tabuleiro) + p3 * heuristica3(tabuleiro)
+    return res
+
+#5
+
+def heuristica5(tabuleiro):
+    res = 0
+    res = max([heuristica1(tabuleiro), heuristica2(tabuleiro), heuristica3(tabuleiro)])
+    return res
 
 ##Main
 
 def main():
     tabuleiro = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]] #inicializa matriz tabuleiro
     leEntrada(tabuleiro)
-    res = heuristica3(tabuleiro)
+    res = heuristica5(tabuleiro)
     print(res)
 
 main()
