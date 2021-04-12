@@ -7,6 +7,10 @@
 import heapq
 import copy
 
+#imports usados no teste
+#import time
+#import tracemalloc
+
 ## classe que define um no da arvore
 
 class verticeArvore:
@@ -60,7 +64,6 @@ def achaNo(valor, no_pai):
     return (-1, -1)
 
 def geraSucessor(no_pai):
-    #print("sucessores\n")
     # pego o no_pai
     # procuro os sucessores a partir do elemento 0
     valor = 0
@@ -79,7 +82,7 @@ def geraSucessor(no_pai):
             no_cima[i][j] = no_cima[i-1][j]
             no_cima[i-1][j] = aux
             #cria verticeArvore filho com profundidade g + 1 
-            filho = verticeArvore(no_cima, no_pai.g + 1, heuristica1(no_cima), [], [])
+            filho = verticeArvore(no_cima, no_pai.g + 1, heuristica3(no_cima), [], [])
             #adiciona filho na lista do pai
             no_pai.filhos.append(filho)
         if(i < 3): # tem sucessor em baixo
@@ -89,7 +92,7 @@ def geraSucessor(no_pai):
             no_baixo[i][j] = no_baixo[i+1][j]
             no_baixo[i+1][j] = aux
             #cria verticeArvore filho com profundidade g + 1 
-            filho = verticeArvore(no_baixo, no_pai.g + 1, heuristica1(no_baixo), [], [])
+            filho = verticeArvore(no_baixo, no_pai.g + 1, heuristica3(no_baixo), [], [])
             #adiciona filho na lista do pai
             no_pai.filhos.append(filho)
         if(j > 0): #tem sucessor na esquerda
@@ -99,7 +102,7 @@ def geraSucessor(no_pai):
             no_esquerda[i][j] = no_esquerda[i][j-1]
             no_esquerda[i][j-1] = aux
             #cria verticeArvore filho com profundidade g + 1 
-            filho = verticeArvore(no_esquerda, no_pai.g + 1, heuristica1(no_esquerda), [], [])
+            filho = verticeArvore(no_esquerda, no_pai.g + 1, heuristica3(no_esquerda), [], [])
             #adiciona filho na lista do pai
             no_pai.filhos.append(filho)
         if(j < 3): #tem sucessor na direita
@@ -109,7 +112,7 @@ def geraSucessor(no_pai):
             no_direita[i][j] = no_direita[i][j+1]
             no_direita[i][j+1] = aux
             #cria verticeArvore filho com profundidade g + 1 
-            filho = verticeArvore(no_direita, no_pai.g + 1, heuristica1(no_direita), [], [])
+            filho = verticeArvore(no_direita, no_pai.g + 1, heuristica3(no_direita), [], [])
             #adiciona filho na lista do pai
             no_pai.filhos.append(filho)
 
@@ -123,9 +126,8 @@ def a_estrela(tabuleiro):
     indiceDicionario = str(tabuleiro)
     global A 
     global F
-    v = verticeArvore(tabuleiro, 0, heuristica1(tabuleiro), [], [])
+    v = verticeArvore(tabuleiro, 0, heuristica3(tabuleiro), [], [])
     A[indiceDicionario] = v
-
     global heap_f
     heapq.heappush(heap_f, (A[indiceDicionario].calculaF(), indiceDicionario))
     while (A != {}) and (not checa_igual(v.tabuleiro)):
@@ -161,7 +163,9 @@ def adicionaEmA(m_linha, posicao, pai, A):
 
 
 def checa_igual(tabuleiro):
-    if heuristica1(tabuleiro) == 0: return True
+    final = config_final()
+    str_final = str(final)
+    if tabuleiro == final: return True
     else: return False
 
 def calcula_min(f, A):
@@ -194,18 +198,23 @@ def prox(i, j): #funcao q retorna a posicao do prox elemento do tabuleiro
     else:
         return (i, j+1)
 
+def tabuleiroPraLista(tabuleiro):
+    lista = []
+    for i in range(0, 4):
+        for j in range(0,4):
+            lista.append(tabuleiro[j][i])
+    return lista
+
 def heuristica2(tabuleiro):
     conta_fora_ordem = 0
-    for i in range(0,4):
-        for j in range(0,4):
-            if tabuleiro[i][j] == 0: # nao analisa caso vazio
-                continue
-            if not (i == 3 and j == 3): # nao analise se chegar no final do tabuleiro
-                x, y = prox(i, j) # calcula as posicoes do proximo elemento
-                if tabuleiro[i][j] == tabuleiro[x][y] - 1: # ve se eh igual
-                    continue
-                else:
-                    conta_fora_ordem += 1 # se nao for, soma
+    lista = tabuleiroPraLista(tabuleiro) # transforma o tabuleiro numa lista sequencial
+    for i in range(0, 16): # itera na lista inteira
+        if lista[i] == 0: 
+            continue
+        else:
+            anterior = lista[i-1] + 1
+            if (lista[i] != anterior and anterior - 1 != 0): #se for 0 o anterior nao analisa 
+                conta_fora_ordem += 1
     return conta_fora_ordem
 
 #3
@@ -248,7 +257,7 @@ def heuristica3(tabuleiro):
 
 def heuristica4(tabuleiro):
     res = 0
-    p1, p2, p3 = [0.3, 0.35, 0.35]
+    p1, p2, p3 = [0.3, 0.2, 0.5]
     res = p1 * heuristica1(tabuleiro) + p2 * heuristica2(tabuleiro) + p3 * heuristica3(tabuleiro)
     return res
 
@@ -264,7 +273,15 @@ def heuristica5(tabuleiro):
 def main():
     tabuleiro = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]] #inicializa matriz tabuleiro
     leEntrada(tabuleiro)
-    res = heuristica5(tabuleiro)
+    res = a_estrela(tabuleiro)
     print(res)
 
+
+
+#tracemalloc.start()
+#inicio = time.time()
 main()
+#atual, maior = tracemalloc.get_traced_memory()
+#print(f"Consumo atual de memoria eh {atual / 10**6}MB; O pico foi {maior / 10**6}MB")
+#print("%s segundos" %(time.time() - inicio))
+#tracemalloc.stop()
